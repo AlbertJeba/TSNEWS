@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "838534387203",
+    "firebase_url": "https://tech-snicks-96b7e-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "tech-snicks-96b7e",
+    "storage_bucket": "tech-snicks-96b7e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:838534387203:android:44684ab1e518af52056036",
+        "android_client_info": {
+          "package_name": "com.example.tsnews"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "838534387203-th5fdoern9s3n68cdc4ka7m8bal27pdr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbKfoP7u7xaU_eaBjlqa1Dg4pV9-9emqs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "838534387203-th5fdoern9s3n68cdc4ka7m8bal27pdr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
