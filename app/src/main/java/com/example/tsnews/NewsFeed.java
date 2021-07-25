@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tsnews.databinding.ActivityNewsFeedBinding;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class NewsFeed extends AppCompatActivity {
 
@@ -34,7 +35,7 @@ public class NewsFeed extends AppCompatActivity {
     private ActivityNewsFeedBinding binding;
     ImageView profile_photo;
     TextView u_name,u_email;
-    Button logout;
+
 
 
     @Override
@@ -66,7 +67,10 @@ public class NewsFeed extends AppCompatActivity {
             return true;
         });
         GoogleSignInAccount account= GoogleSignIn.getLastSignedInAccount(this);
-        u_name.setText(account.getDisplayName());
+        FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
+        String cuid= user.getUid();
+        u_name.setText(cuid);
+        //u_name.setText(account.getDisplayName());
         u_email.setText(account.getEmail());
        Glide.with(this).load(account.getPhotoUrl()).into(profile_photo);
        /* logout.setOnClickListener(new View.OnClickListener() {

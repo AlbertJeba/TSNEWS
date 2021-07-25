@@ -6,8 +6,10 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -16,7 +18,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Text;
 
 import java.text.ParseException;
@@ -25,8 +36,12 @@ import java.util.TimeZone;
 
 import static android.text.format.DateUtils.*;
 
-public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewholder>
-{
+public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewholder> {
+
+    ImageButton fav_btn;
+    DatabaseReference databaseReference, fav_item_ref, fav_ref;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    Boolean favchecker = false;
 
     public myadapter(@NonNull FirebaseRecyclerOptions<model> options) {
         super(options);
@@ -34,21 +49,70 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
 
     @Override
     protected void onBindViewHolder(@NonNull final myviewholder holder, int position, @NonNull final model model) {
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String currentuserid = user.getUid();
+        final String postkey = getRef(position).getKey();
+
         holder.header.setText(model.getHeader());
-        String time=calculateTimeAgo(model.getTime());
+        String time = calculateTimeAgo(model.getTime());
         holder.time.setText(time);
         Glide.with(holder.img1.getContext()).load(model.getImage()).into(holder.img1);
-        holder.card.setOnClickListener(new View.OnClickListener() {
+        holder.header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(holder.img1.getContext(),news_desc.class);
-                intent.putExtra("linkvalue",model.getLink());
+                Intent intent = new Intent(holder.img1.getContext(), news_desc.class);
+                intent.putExtra("linkvalue", model.getLink());
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 holder.img1.getContext().startActivity(intent);
             }
         });
 
+        fav_ref=database.getReference("favourites");
+        fav_item_ref=database.getReference("favouriteList").child(currentuserid);
+        String header = getItem(position).getHeader();
+        String img = getItem(position).getImage();
+        String url = getItem(position).getLink();
+        String tim = getItem(position).getTime();
+
+        holder.favouriteChecker(postkey);
+        holder.fav_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                favchecker = true;
+                fav_ref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                        if (favchecker.equals(true)) {
+                            if (snapshot.child(postkey).hasChild(currentuserid)) {
+                                fav_ref.child(postkey).child(currentuserid).removeValue();
+                              //  fav_ref.child(currentuserid).child(postkey).removeValue();
+                                delete(tim);
+                                favchecker = false;
+                            } else {
+                                fav_ref.child(postkey).child(currentuserid).setValue(true);
+                                model.setHeader(header);
+                                model.setImage(img);
+                                model.setLink(url);
+                                model.setTime(tim);
+
+                                String id = fav_ref.push().getKey();
+                                fav_item_ref.child(currentuserid).child(id).setValue(model);
+                                favchecker = false;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                    }
+                });
+            }
+        });
+
     }
+
     private String calculateTimeAgo(String time) {
         @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Calcutta"));
@@ -57,34 +121,80 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
             long now = System.currentTimeMillis();
             CharSequence ago =
                     getRelativeTimeSpanString(time1, now, MINUTE_IN_MILLIS);
-            return ago+"";
+            return ago + "";
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return "";
     }
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    String currentuser= user.getUid();
+    void delete(String tim) {
+        Query query = fav_item_ref.child(currentuser).orderByChild("time").equalTo(tim);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot1 : snapshot.getChildren()) {
+                    dataSnapshot1.getRef().removeValue();
+                    //Toast.makeText(fav_btn.getContext(), "deleted", Toast.LENGTH_SHORT).show();
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+            }
+        });
+
+    }
 
     @NonNull
     @Override
     public myviewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.singlerow,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.singlerow, parent, false);
         return new myviewholder(view);
     }
 
-    class myviewholder extends RecyclerView.ViewHolder
-    {
+    class myviewholder extends RecyclerView.ViewHolder {
         ImageView img1;
-        TextView header, link,time;
+        TextView header, link, time;
         CardView card;
+        ImageButton fav_btn;
 
         public myviewholder(@NonNull View itemView) {
             super(itemView);
-            img1=itemView.findViewById(R.id.img1);
-            header=itemView.findViewById(R.id.header);
-            link=itemView.findViewById(R.id.header);
-            time=itemView.findViewById(R.id.time);
-            card=itemView.findViewById(R.id.card);
+            img1 = itemView.findViewById(R.id.img1);
+            header = itemView.findViewById(R.id.header);
+            link = itemView.findViewById(R.id.header);
+            time = itemView.findViewById(R.id.time);
+            card = itemView.findViewById(R.id.card);
+            fav_btn = itemView.findViewById(R.id.not_bookmark_icon);
+        }
+
+
+        public void favouriteChecker(String postkey) {
+
+            fav_item_ref = database.getReference("favourites");
+
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            String uid = user.getUid();
+
+            fav_ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                    if (snapshot.child(postkey).hasChild(uid)) {
+                        fav_btn.setImageResource(R.drawable.ic_baseline_turned_in_24);
+                    } else {
+                        fav_btn.setImageResource(R.drawable.ic_baseline_turned_in_not_24);
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                }
+            });
         }
     }
 }

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,9 @@ import com.example.tsnews.databinding.FragmentHomeBinding;
 import com.example.tsnews.model;
 import com.example.tsnews.myadapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class HomeFragment extends Fragment {
@@ -27,6 +31,10 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     RecyclerView recview;
     myadapter adapter;
+    ImageButton fav_btn;
+    DatabaseReference databaseReference,fav_item_ref,fav_ref;
+    FirebaseDatabase database=FirebaseDatabase.getInstance();
+    Boolean favchecker=false;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -44,12 +52,10 @@ public class HomeFragment extends Fragment {
                 textView.setText(s);
             }
         });*/
-
-
-
-
-
-
+        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+        String currentuserid= user.getUid();
+        fav_ref=database.getReference("favourites");
+        fav_item_ref=database.getReference("favouriteList").child(currentuserid);
 
         FirebaseRecyclerOptions<model> options =
                 new FirebaseRecyclerOptions.Builder<model>()
@@ -60,10 +66,11 @@ public class HomeFragment extends Fragment {
         recview.setHasFixedSize(true);
         recview.setLayoutManager(new LinearLayoutManager(root.getContext()));
         adapter = new myadapter(options);
-        recview.setAdapter( adapter);
+        recview.setAdapter(adapter);
 
         return root;
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -75,6 +82,7 @@ public class HomeFragment extends Fragment {
         super.onStop();
         adapter.stopListening();
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

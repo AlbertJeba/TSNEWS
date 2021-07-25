@@ -11,14 +11,30 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tsnews.R;
 import com.example.tsnews.databinding.FragmentGalleryBinding;
+import com.example.tsnews.model;
+import com.example.tsnews.myadapter;
+import com.example.tsnews.myadapterbookmark;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class GalleryFragment extends Fragment {
 
     private GalleryViewModel galleryViewModel;
     private FragmentGalleryBinding binding;
+    RecyclerView recview1;
+    DatabaseReference databaseReference,fav_item_ref,fav_ref;
+    com.example.tsnews.myadapterbookmark adapterbookmark;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -28,14 +44,39 @@ public class GalleryFragment extends Fragment {
         binding = FragmentGalleryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textGallery;
+        /*final TextView textView = binding.textGallery;
         galleryViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
             }
-        });
+        });*/
+        FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
+        String cuid= user.getUid();
+        FirebaseRecyclerOptions<model> options =
+                new FirebaseRecyclerOptions.Builder<model>()
+                        .setQuery(FirebaseDatabase.getInstance().getReference("favourites").child(cuid).orderByChild("tsid").limitToLast(100000), model.class)
+                        .build();
+        // Add the following lines to create RecyclerView
+        recview1 = root.findViewById(R.id.recview_bookmark);
+        recview1.setHasFixedSize(true);
+        recview1.setLayoutManager(new LinearLayoutManager(root.getContext()));
+        adapterbookmark = new myadapterbookmark(options);
+        recview1.setAdapter(adapterbookmark);
+
         return root;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapterbookmark.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapterbookmark.stopListening();
     }
 
     @Override
