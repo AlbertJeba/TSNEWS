@@ -1,5 +1,9 @@
 package com.example.tsnews.ui.home;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +18,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.tsnews.R;
 import com.example.tsnews.databinding.FragmentHomeBinding;
@@ -24,6 +29,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.shashank.sony.fancytoastlib.FancyToast;
 
 public class HomeFragment extends Fragment {
 
@@ -37,6 +43,7 @@ public class HomeFragment extends Fragment {
     Boolean favchecker=false;
 
 
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
@@ -44,7 +51,7 @@ public class HomeFragment extends Fragment {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
+       // FirebaseDatabase.getInstance().setPersistenceEnabled(true);
        /* final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
@@ -52,6 +59,8 @@ public class HomeFragment extends Fragment {
                 textView.setText(s);
             }
         });*/
+
+
         FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
         String currentuserid= user.getUid();
         fav_ref=database.getReference("favourites");
@@ -68,8 +77,13 @@ public class HomeFragment extends Fragment {
         adapter = new myadapter(options);
         recview.setAdapter(adapter);
 
+
         return root;
+
+
     }
+
+
 
     @Override
     public void onStart() {

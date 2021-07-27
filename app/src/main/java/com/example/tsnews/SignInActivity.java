@@ -22,6 +22,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignInActivity extends AppCompatActivity {
 
@@ -33,10 +34,13 @@ public class SignInActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
+     //   FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
         FirebaseUser currentUser = mAuth.getCurrentUser();
        // updateUI(currentUser);
-        if (currentUser!=null)
+        if (currentUser!=null){
             startActivity(new Intent(getApplicationContext(),NewsFeed.class));
+            }
     }
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +48,7 @@ public class SignInActivity extends AppCompatActivity {
         btn=findViewById(R.id.SignInButtonGoogle);
         mAuth = FirebaseAuth.getInstance();
         processrequest();
+
         
 
         btn.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +59,7 @@ public class SignInActivity extends AppCompatActivity {
         });
         
     }
+
 
     private void processrequest() {
         // Configure Google Sign In

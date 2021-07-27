@@ -1,12 +1,23 @@
 package com.example.tsnews;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
@@ -24,37 +35,60 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.tsnews.databinding.ActivityNewsFeedBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+import com.shashank.sony.fancydialoglib.Animation;
+import com.shashank.sony.fancydialoglib.FancyAlertDialog;
+import com.shashank.sony.fancydialoglib.FancyAlertDialogListener;
+import com.shashank.sony.fancygifdialoglib.FancyGifDialog;
+import com.shashank.sony.fancygifdialoglib.FancyGifDialogListener;
+import com.shashank.sony.fancytoastlib.FancyToast;
+import com.thecode.aestheticdialogs.AestheticDialog;
+import com.thecode.aestheticdialogs.DialogAnimation;
+import com.thecode.aestheticdialogs.DialogStyle;
+import com.thecode.aestheticdialogs.DialogType;
+import com.thecode.aestheticdialogs.OnDialogClickListener;
+
+import org.jetbrains.annotations.NotNull;
+
+import static com.example.tsnews.no_internet.calledAlready;
 
 public class NewsFeed extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityNewsFeedBinding binding;
     ImageView profile_photo;
-    TextView u_name,u_email;
+    TextView u_name, u_email;
 
-
-
+    static boolean calledAlready = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
+        if (!calledAlready)
+        {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+            calledAlready = true;
+        }
         binding = ActivityNewsFeedBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarNewsFeed.toolbar);
+
         //Stat-off Profile details from Google Sign-in
         NavigationView navigationView = binding.navView;
-        profile_photo=navigationView.getHeaderView(0).findViewById(R.id.user_profile_photo);
-        u_name=navigationView.getHeaderView(0).findViewById(R.id.user_name);
-        u_email=navigationView.getHeaderView(0).findViewById(R.id.user_email_id);
+        profile_photo = navigationView.getHeaderView(0).findViewById(R.id.user_profile_photo);
+        u_name = navigationView.getHeaderView(0).findViewById(R.id.user_name);
+        u_email = navigationView.getHeaderView(0).findViewById(R.id.user_email_id);
         //logout=navigationView.getMenu().findItem(R.id.Logout);
         navigationView.getMenu().findItem(R.id.Logout).setOnMenuItemClickListener(menuItem -> {
             FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(getApplicationContext(),SignInActivity.class));
+            startActivity(new Intent(getApplicationContext(), SignInActivity.class));
             // [START auth_fui_signout]
             AuthUI.getInstance()
                     .signOut(this)
@@ -66,13 +100,13 @@ public class NewsFeed extends AppCompatActivity {
             finish();
             return true;
         });
-        GoogleSignInAccount account= GoogleSignIn.getLastSignedInAccount(this);
-        FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
-        String cuid= user.getUid();
-        u_name.setText(cuid);
-        //u_name.setText(account.getDisplayName());
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String cuid = user.getUid();
+        //u_name.setText(cuid);
+        u_name.setText(account.getDisplayName());
         u_email.setText(account.getEmail());
-       Glide.with(this).load(account.getPhotoUrl()).into(profile_photo);
+        Glide.with(this).load(account.getPhotoUrl()).into(profile_photo);
        /* logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,6 +124,34 @@ public class NewsFeed extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });*/
+        //internet check start
+        if (!isNetworkAvailable()) {
+            FancyToast.makeText(this, "No Internet Connection", FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
+
+        } else if (isNetworkAvailable()) {
+
+            //Toast.makeText(MainActivity.this,"Welcome", Toast.LENGTH_LONG).show();
+        }
+        //internet check end
+
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //internet check start
+                if (!isNetworkAvailable()) {
+
+                    FancyToast.makeText(getApplicationContext(), "No Internet Connection", FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
+
+                } else if (isNetworkAvailable()) {
+                    swipeRefreshLayout.setRefreshing(false);
+                    //Toast.makeText(MainActivity.this,"Welcome", Toast.LENGTH_LONG).show();
+                }
+                //internet check end
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
         DrawerLayout drawer = binding.drawerLayout;
 
         // Passing each menu ID as a set of Ids because each
@@ -102,6 +164,39 @@ public class NewsFeed extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
     }
+
+    public boolean isNetworkAvailable() {
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (connectivityManager != null) {
+
+
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
+                if (capabilities != null) {
+                    if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+
+                        return true;
+                    } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+
+                        return true;
+                    } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+
+    }
+
+
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -116,4 +211,5 @@ public class NewsFeed extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
 }

@@ -7,7 +7,7 @@
     android:layout_marginLeft="10dp"
     android:layout_marginTop="10dp"
     android:layout_marginRight="10dp"
-    android:elevation="80dp"
+    android:elevation="100dp"
     app:cardCornerRadius="10dp"
     app:cardUseCompatPadding="true">
 
@@ -38,6 +38,7 @@
                         android:layout_width="80dp"
                         android:layout_height="80dp"
                         android:layout_gravity="center"
+                        android:background="@drawable/loading"
                         android:scaleType="fitXY"
                         android:src="@mipmap/ic_launcher" />
 
@@ -54,8 +55,8 @@
                     android:id="@+id/header_bm"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
                     android:maxLines="2"
                     android:text="The headlines will be placed hereThe headlines will be placed hereThe headlines will be placed here"
                     android:textColor="#000"
@@ -70,9 +71,9 @@
                         android:id="@+id/time_bm"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:text="Time"
                         android:layout_marginLeft="5dp"
                         android:padding="5dp"
+                        android:text="Time"
                         android:textColor="#000"
                         android:textSize="15sp" />
 
@@ -85,9 +86,9 @@
                             android:id="@+id/bookmark_icon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:padding="5dp"
                             android:background="@color/fui_transparent"
-                            android:src="@drawable/ic_baseline_turned_in_not_24" />
+                            android:padding="5dp"
+                            android:src="@drawable/ic_baseline_turned_in_24" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>

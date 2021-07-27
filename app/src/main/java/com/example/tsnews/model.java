@@ -3,6 +3,19 @@ package com.example.tsnews;
 public class model
 {
     String header, image, link,time;
+    Double tsid;
+
+    public Double getTsid() {
+        return tsid;
+    }
+
+    public void setTsid(Double tsid) {
+        this.tsid = tsid;
+    }
+
+    public model(Double tsid) {
+        this.tsid = tsid;
+    }
 
     public model() {
     }

@@ -2,8 +2,9 @@ package com.example.tsnews;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.Intent;
+
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,12 +15,13 @@ import android.widget.Toast;
 public class news_desc extends AppCompatActivity
 {
     WebView webView;
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_desc);
 
-        webView=(WebView)findViewById(R.id.webview);
+        webView=findViewById(R.id.webview);
 
         webView.getSettings().setLoadsImagesAutomatically(true);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -29,7 +31,7 @@ public class news_desc extends AppCompatActivity
             String path=data.toString();
             Toast.makeText(this, "Path ="+path, Toast.LENGTH_SHORT).show();
 
-            WebView webView=(WebView)findViewById(R.id.webview);
+            WebView webView=findViewById(R.id.webview);
             webView.loadUrl(path);
         }
 

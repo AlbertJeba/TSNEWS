@@ -1,7 +1,11 @@
 package com.example.tsnews;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +15,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.shashank.sony.fancytoastlib.FancyToast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,9 +36,12 @@ public class myadapterbookmark extends FirebaseRecyclerAdapter<model, myadapterb
     DatabaseReference databaseReference,fav_item_ref;
     FirebaseDatabase database=FirebaseDatabase.getInstance();
     Boolean favchecker=false;
+
     public myadapterbookmark(@NonNull FirebaseRecyclerOptions<model> options) {
         super(options);
     }
+
+
 
     @Override
     protected void onBindViewHolder(@NonNull final myviewholder holder, int position, @NonNull final model model) {
@@ -73,7 +82,6 @@ public class myadapterbookmark extends FirebaseRecyclerAdapter<model, myadapterb
         return "";
     }
 
-
     @NonNull
     @Override
     public myviewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -96,4 +104,7 @@ public class myadapterbookmark extends FirebaseRecyclerAdapter<model, myadapterb
             card=itemView.findViewById(R.id.card);
         }
     }
+
+
+
 }

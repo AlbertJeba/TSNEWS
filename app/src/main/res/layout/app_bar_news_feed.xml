@@ -15,8 +15,12 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.TSNEWS.PopupOverlay" />
+            android:background="#0A0A0A"
+            app:popupTheme="@style/Theme.TSNEWS.PopupOverlay"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp"
+
+            app:contentInsetStartWithNavigation="0dp"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 

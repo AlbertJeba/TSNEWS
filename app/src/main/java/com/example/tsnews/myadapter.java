@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,11 +55,12 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
         String currentuserid = user.getUid();
         final String postkey = getRef(position).getKey();
 
+        // FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         holder.header.setText(model.getHeader());
         String time = calculateTimeAgo(model.getTime());
         holder.time.setText(time);
         Glide.with(holder.img1.getContext()).load(model.getImage()).into(holder.img1);
-        holder.header.setOnClickListener(new View.OnClickListener() {
+        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(holder.img1.getContext(), news_desc.class);
@@ -68,8 +70,8 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
             }
         });
 
-        fav_ref=database.getReference("favourites");
-        fav_item_ref=database.getReference("favouriteList").child(currentuserid);
+        fav_ref = database.getReference("favourites");
+        fav_item_ref = database.getReference("favouriteList").child(currentuserid);
         String header = getItem(position).getHeader();
         String img = getItem(position).getImage();
         String url = getItem(position).getLink();
@@ -86,7 +88,7 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
                         if (favchecker.equals(true)) {
                             if (snapshot.child(postkey).hasChild(currentuserid)) {
                                 fav_ref.child(postkey).child(currentuserid).removeValue();
-                              //  fav_ref.child(currentuserid).child(postkey).removeValue();
+                                //  fav_ref.child(currentuserid).child(postkey).removeValue();
                                 delete(tim);
                                 favchecker = false;
                             } else {
@@ -127,8 +129,10 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
         }
         return "";
     }
+
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    String currentuser= user.getUid();
+    String currentuser = user.getUid();
+
     void delete(String tim) {
         Query query = fav_item_ref.child(currentuser).orderByChild("time").equalTo(tim);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -160,6 +164,7 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
         TextView header, link, time;
         CardView card;
         ImageButton fav_btn;
+        LinearLayout linearLayout;
 
         public myviewholder(@NonNull View itemView) {
             super(itemView);
@@ -169,6 +174,7 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
             time = itemView.findViewById(R.id.time);
             card = itemView.findViewById(R.id.card);
             fav_btn = itemView.findViewById(R.id.not_bookmark_icon);
+            linearLayout=itemView.findViewById(R.id.linear_card);
         }
 
 
