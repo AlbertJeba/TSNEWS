@@ -23,4 +23,5 @@
         app:headerLayout="@layout/nav_header_news_feed"
         app:menu="@menu/activity_news_feed_drawer" />
 
+
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -65,6 +65,7 @@
                 android:layout_below="@id/linear_time"
                 android:text="The headlines will be placed here"
                 android:textColor="#000"
+                android:maxLines="2"
                 android:textSize="18sp" />
         </LinearLayout>
 
@@ -80,7 +81,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/fui_transparent"
+                android:layout_marginRight="10dp"
                 android:src="@drawable/ic_baseline_turned_in_not_24" />
+            <ImageButton
+                android:id="@+id/share_btn"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:scaleType="fitXY"
+                android:padding="2dp"
+                android:background="@color/fui_transparent"
+                android:src="@drawable/share"/>
         </LinearLayout>
 
 

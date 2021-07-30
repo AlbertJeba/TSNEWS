@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.tsnews.ui.home.HomeFragment;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -29,6 +31,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -40,24 +43,15 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.tsnews.databinding.ActivityNewsFeedBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
 import com.google.firebase.database.FirebaseDatabase;
-import com.shashank.sony.fancydialoglib.Animation;
-import com.shashank.sony.fancydialoglib.FancyAlertDialog;
-import com.shashank.sony.fancydialoglib.FancyAlertDialogListener;
-import com.shashank.sony.fancygifdialoglib.FancyGifDialog;
-import com.shashank.sony.fancygifdialoglib.FancyGifDialogListener;
 import com.shashank.sony.fancytoastlib.FancyToast;
-import com.thecode.aestheticdialogs.AestheticDialog;
-import com.thecode.aestheticdialogs.DialogAnimation;
-import com.thecode.aestheticdialogs.DialogStyle;
-import com.thecode.aestheticdialogs.DialogType;
-import com.thecode.aestheticdialogs.OnDialogClickListener;
+
 
 import org.jetbrains.annotations.NotNull;
 
-import static com.example.tsnews.no_internet.calledAlready;
 
-public class NewsFeed extends AppCompatActivity {
+public class NewsFeed extends AppCompatActivity  {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityNewsFeedBinding binding;
@@ -65,16 +59,12 @@ public class NewsFeed extends AppCompatActivity {
     TextView u_name, u_email;
 
     static boolean calledAlready = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
-        if (!calledAlready)
-        {
-            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-            calledAlready = true;
-        }
+        // FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         binding = ActivityNewsFeedBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -94,12 +84,13 @@ public class NewsFeed extends AppCompatActivity {
                     .signOut(this)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         public void onComplete(@NonNull Task<Void> task) {
-                            // ...
+
                         }
                     });
             finish();
             return true;
         });
+
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String cuid = user.getUid();
@@ -135,7 +126,30 @@ public class NewsFeed extends AppCompatActivity {
         //internet check end
 
         SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        swipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+
+                        if (!isNetworkAvailable()) {
+
+                            FancyToast.makeText(getApplicationContext(), "No Internet Connection", FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
+
+                        } else if (isNetworkAvailable()) {
+                            swipeRefreshLayout.setRefreshing(false);
+                            //Toast.makeText(MainActivity.this,"Welcome", Toast.LENGTH_LONG).show();
+                        }
+                        //internet check end
+
+                        // This method performs the actual data-refresh operation.
+                        // The method calls setRefreshing(false) when it's finished.
+                        // myUpdateOperation();
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }
+        );
+
+      /*  swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 //internet check start
@@ -150,7 +164,7 @@ public class NewsFeed extends AppCompatActivity {
                 //internet check end
                 swipeRefreshLayout.setRefreshing(false);
             }
-        });
+        });*/
 
         DrawerLayout drawer = binding.drawerLayout;
 
@@ -163,6 +177,11 @@ public class NewsFeed extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_news_feed);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+    }
+
+    private void myUpdateOperation() {
+        // TODO: 20-Mar-17
+        Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show();
     }
 
     public boolean isNetworkAvailable() {
@@ -194,8 +213,33 @@ public class NewsFeed extends AppCompatActivity {
     }
 
 
+  /*  @Override
+    public void onBackPressed() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Exit Application?");
+        alertDialogBuilder
+                .setMessage("Click yes to exit!")
+                .setCancelable(false)
+                .setPositiveButton("Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                moveTaskToBack(true);
+                                android.os.Process.killProcess(android.os.Process.myPid());
+                                System.exit(1);
+                            }
+                        })
 
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
 
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+*/
 
 
     @Override
@@ -211,5 +255,6 @@ public class NewsFeed extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
 
 }

@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Project/TSNEWS/app/src/main/res/layout/activity_news_desc.xml" value="0.15895765472312703" />
+        <entry key="..\:/Project/TSNEWS/app/src/main/res/layout/activity_news_feed.xml" value="0.15895765472312703" />
+        <entry key="..\:/Project/TSNEWS/app/src/main/res/layout/activity_no_internet.xml" value="0.15895765472312703" />
+        <entry key="..\:/Project/TSNEWS/app/src/main/res/layout/fragment_gallery.xml" value="0.15895765472312703" />
+        <entry key="..\:/Project/TSNEWS/app/src/main/res/layout/fragment_home.xml" value="0.15895765472312703" />
+        <entry key="..\:/Project/TSNEWS/app/src/main/res/layout/fragment_slideshow.xml" value="0.15895765472312703" />
+        <entry key="..\:/Project/TSNEWS/app/src/main/res/layout/nav_header_news_feed.xml" value="0.15895765472312703" />
+        <entry key="..\:/Project/TSNEWS/app/src/main/res/layout/singlerow.xml" value="0.176" />
+        <entry key="..\:/Project/TSNEWS/app/src/main/res/layout/singlerow_bookmark.xml" value="0.15895765472312703" />
+        <entry key="..\:/Project/TSNEWS/app/src/main/res/menu/activity_news_feed_drawer.xml" value="0.16052631578947368" />
+        <entry key="..\:/Project/TSNEWS/app/src/main/res/menu/menu_navigation_drawer_bottom.xml" value="0.16052631578947368" />
+        <entry key="..\:/Project/TSNEWS/app/src/main/res/menu/news_feed.xml" value="0.15895765472312703" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

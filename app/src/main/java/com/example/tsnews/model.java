@@ -1,7 +1,12 @@
 package com.example.tsnews;
 
+import com.google.firebase.database.FirebaseDatabase;
+
 public class model
 {
+    private static FirebaseDatabase database;
+
+
     String header, image, link,time;
     Double tsid;
 

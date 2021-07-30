@@ -29,27 +29,30 @@ public class SignInActivity extends AppCompatActivity {
     SignInButton btn;
     GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
+    boolean flag = true;
+    FirebaseDatabase firebaseDatabase;
 
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-     //   FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        //   FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-       // updateUI(currentUser);
-        if (currentUser!=null){
-            startActivity(new Intent(getApplicationContext(),NewsFeed.class));
-            }
+        /*FirebaseUser currentUser = mAuth.getCurrentUser();
+        // updateUI(currentUser);
+        if (currentUser != null) {
+            startActivity(new Intent(getApplicationContext(), NewsFeed.class));
+        }*/
+
     }
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
-        btn=findViewById(R.id.SignInButtonGoogle);
+        btn = findViewById(R.id.SignInButtonGoogle);
         mAuth = FirebaseAuth.getInstance();
         processrequest();
 
-        
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,7 +60,7 @@ public class SignInActivity extends AppCompatActivity {
                 processlogin();
             }
         });
-        
+
     }
 
 
@@ -90,7 +93,7 @@ public class SignInActivity extends AppCompatActivity {
 
                 firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
-                Toast.makeText(getApplicationContext(),"Error is Google's Info ",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Error is Google's Info ", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -103,10 +106,10 @@ public class SignInActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
-                            startActivity(new Intent(getApplicationContext(),NewsFeed.class));
+                            startActivity(new Intent(getApplicationContext(), NewsFeed.class));
                             finish();
                         } else {
-                            Toast.makeText(getApplicationContext(),"Problem is FireBase ",Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Problem is FireBase ", Toast.LENGTH_LONG).show();
                         }
                     }
                 });

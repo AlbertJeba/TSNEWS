@@ -1,7 +1,14 @@
 package com.example.tsnews;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Environment;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +38,9 @@ import com.google.firebase.database.ValueEventListener;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
@@ -43,6 +53,7 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
     DatabaseReference databaseReference, fav_item_ref, fav_ref;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     Boolean favchecker = false;
+
 
     public myadapter(@NonNull FirebaseRecyclerOptions<model> options) {
         super(options);
@@ -76,7 +87,29 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
         String img = getItem(position).getImage();
         String url = getItem(position).getLink();
         String tim = getItem(position).getTime();
+        ImageView gg= holder.img1;
 
+        holder.share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri bmpUri = getLocalBitmapUri(gg);
+
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/*");
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_SEND_MULTIPLE);
+                String body = "Download Tech Snicks";
+                if (bmpUri != null) {
+                    // Construct a ShareIntent with link to image
+
+                    intent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+
+                }
+                intent.putExtra(Intent.EXTRA_TEXT, header+ "\n\n"+url);
+                intent = Intent.createChooser(intent, "Share");
+                v.getContext().startActivity(intent);
+            }
+        });
         holder.favouriteChecker(postkey);
         holder.fav_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,9 +147,32 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
         });
 
     }
-
+    public Uri getLocalBitmapUri(ImageView imageView) {
+        // Extract Bitmap from ImageView drawable
+        Drawable drawable = imageView.getDrawable();
+        Bitmap bmp = null;
+        if (drawable instanceof BitmapDrawable){
+            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        } else {
+            return null;
+        }
+        // Store image to default external storage directory
+        Uri bmpUri = null;
+        try {
+            File file =  new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS), "share_image_" + System.currentTimeMillis() + ".png");
+            file.getParentFile().mkdirs();
+            FileOutputStream out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.close();
+            bmpUri = Uri.fromFile(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bmpUri;
+    }
     private String calculateTimeAgo(String time) {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Calcutta"));
         try {
             long time1 = sdf.parse(time).getTime();
@@ -163,7 +219,7 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
         ImageView img1;
         TextView header, link, time;
         CardView card;
-        ImageButton fav_btn;
+        ImageButton fav_btn, share;
         LinearLayout linearLayout;
 
         public myviewholder(@NonNull View itemView) {
@@ -174,7 +230,8 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
             time = itemView.findViewById(R.id.time);
             card = itemView.findViewById(R.id.card);
             fav_btn = itemView.findViewById(R.id.not_bookmark_icon);
-            linearLayout=itemView.findViewById(R.id.linear_card);
+            linearLayout = itemView.findViewById(R.id.linear_card);
+            share = itemView.findViewById(R.id.share_btn);
         }
 
 
