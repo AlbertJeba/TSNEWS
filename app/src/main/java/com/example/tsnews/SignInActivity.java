@@ -4,9 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -31,6 +33,7 @@ public class SignInActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     boolean flag = true;
     FirebaseDatabase firebaseDatabase;
+    Window window;
 
     @Override
     public void onStart() {
@@ -43,6 +46,10 @@ public class SignInActivity extends AppCompatActivity {
         if (currentUser != null) {
             startActivity(new Intent(getApplicationContext(), NewsFeed.class));
         }*/
+        if (Build.VERSION.SDK_INT >= 21) {
+            window = this.getWindow();
+            window.setStatusBarColor(this.getResources().getColor(R.color.gray_back));
+        }
 
     }
 

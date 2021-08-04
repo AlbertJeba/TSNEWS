@@ -11,12 +11,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-public class news_desc extends AppCompatActivity
-{
+
+public class news_desc extends AppCompatActivity {
     WebView webView;
-    @SuppressLint("SetJavaScriptEnabled")
+
+    @SuppressLint({"SetJavaScriptEnabled", "ResourceType"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +38,7 @@ public class news_desc extends AppCompatActivity
             webView.loadUrl(path);
         }
 
+        pro_gress pro = new pro_gress(this);
 
         final ProgressDialog pd = new ProgressDialog(this);
         pd.setTitle("Tech Snicks");
@@ -45,13 +48,16 @@ public class news_desc extends AppCompatActivity
                                      @Override
                                      public void onPageStarted(WebView view, String url, Bitmap favicon) {
                                          super.onPageStarted(view, url, favicon);
-                                         pd.show();
+                                         //pd.show();
+                                         pro.show();
+
                                      }
 
                                      @Override
                                      public void onPageFinished(WebView view, String url) {
                                          super.onPageFinished(view, url);
-                                         pd.dismiss();
+                                         // pd.dismiss();
+                                         pro.dismiss();
                                      }
                                  }
         );

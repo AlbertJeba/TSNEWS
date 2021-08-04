@@ -16,10 +16,11 @@
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/contact_us_icon"
             android:title="Contact Us" />
+        <item
+            android:id="@+id/Logout"
+
+            android:title="Logout" />
     </group>
 
-    <item
-        android:id="@+id/Logout"
 
-        android:title="Logout" />
 </menu>

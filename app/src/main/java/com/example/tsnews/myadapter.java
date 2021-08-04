@@ -105,8 +105,8 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
                     intent.putExtra(Intent.EXTRA_STREAM, bmpUri);
 
                 }
-                intent.putExtra(Intent.EXTRA_TEXT, header+ "\n\n"+url);
-                intent = Intent.createChooser(intent, "Share");
+                intent.putExtra(Intent.EXTRA_TEXT, header+ "\n\nRead more -"+url);
+                intent = Intent.createChooser(intent, "Share News");
                 v.getContext().startActivity(intent);
             }
         });

@@ -15,6 +15,7 @@ import android.provider.Settings;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,6 +32,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -51,31 +55,39 @@ import com.shashank.sony.fancytoastlib.FancyToast;
 import org.jetbrains.annotations.NotNull;
 
 
-public class NewsFeed extends AppCompatActivity  {
+public class NewsFeed extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityNewsFeedBinding binding;
     ImageView profile_photo;
     TextView u_name, u_email;
+    Window window;
 
-    static boolean calledAlready = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
+
         binding = ActivityNewsFeedBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        //custom notification shade color  start
+        if (Build.VERSION.SDK_INT >= 21) {
+            window = this.getWindow();
+            window.setStatusBarColor(this.getResources().getColor(R.color.gray_back));
+        }
+        //end
         setSupportActionBar(binding.appBarNewsFeed.toolbar);
+
+
 
         //Stat-off Profile details from Google Sign-in
         NavigationView navigationView = binding.navView;
         profile_photo = navigationView.getHeaderView(0).findViewById(R.id.user_profile_photo);
         u_name = navigationView.getHeaderView(0).findViewById(R.id.user_name);
         u_email = navigationView.getHeaderView(0).findViewById(R.id.user_email_id);
-        //logout=navigationView.getMenu().findItem(R.id.Logout);
+        //logout button
         navigationView.getMenu().findItem(R.id.Logout).setOnMenuItemClickListener(menuItem -> {
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(getApplicationContext(), SignInActivity.class));
@@ -93,28 +105,10 @@ public class NewsFeed extends AppCompatActivity  {
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String cuid = user.getUid();
-        //u_name.setText(cuid);
         u_name.setText(account.getDisplayName());
         u_email.setText(account.getEmail());
         Glide.with(this).load(account.getPhotoUrl()).into(profile_photo);
-       /* logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(getApplicationContext(),SignInActivity.class));
-                finish();
-            }
-        });
-8?
-        //End-off Profile details from Google Sign-in
-        /*binding.appBarNewsFeed.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
+
         //internet check start
         if (!isNetworkAvailable()) {
             FancyToast.makeText(this, "No Internet Connection", FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
@@ -124,47 +118,6 @@ public class NewsFeed extends AppCompatActivity  {
             //Toast.makeText(MainActivity.this,"Welcome", Toast.LENGTH_LONG).show();
         }
         //internet check end
-
-        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(
-                new SwipeRefreshLayout.OnRefreshListener() {
-                    @Override
-                    public void onRefresh() {
-
-                        if (!isNetworkAvailable()) {
-
-                            FancyToast.makeText(getApplicationContext(), "No Internet Connection", FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
-
-                        } else if (isNetworkAvailable()) {
-                            swipeRefreshLayout.setRefreshing(false);
-                            //Toast.makeText(MainActivity.this,"Welcome", Toast.LENGTH_LONG).show();
-                        }
-                        //internet check end
-
-                        // This method performs the actual data-refresh operation.
-                        // The method calls setRefreshing(false) when it's finished.
-                        // myUpdateOperation();
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                }
-        );
-
-      /*  swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                //internet check start
-                if (!isNetworkAvailable()) {
-
-                    FancyToast.makeText(getApplicationContext(), "No Internet Connection", FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
-
-                } else if (isNetworkAvailable()) {
-                    swipeRefreshLayout.setRefreshing(false);
-                    //Toast.makeText(MainActivity.this,"Welcome", Toast.LENGTH_LONG).show();
-                }
-                //internet check end
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        });*/
 
         DrawerLayout drawer = binding.drawerLayout;
 
@@ -177,11 +130,6 @@ public class NewsFeed extends AppCompatActivity  {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_news_feed);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-    }
-
-    private void myUpdateOperation() {
-        // TODO: 20-Mar-17
-        Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show();
     }
 
     public boolean isNetworkAvailable() {
@@ -211,36 +159,6 @@ public class NewsFeed extends AppCompatActivity  {
         return false;
 
     }
-
-
-  /*  @Override
-    public void onBackPressed() {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setTitle("Exit Application?");
-        alertDialogBuilder
-                .setMessage("Click yes to exit!")
-                .setCancelable(false)
-                .setPositiveButton("Yes",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                moveTaskToBack(true);
-                                android.os.Process.killProcess(android.os.Process.myPid());
-                                System.exit(1);
-                            }
-                        })
-
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-
-                        dialog.cancel();
-                    }
-                });
-
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-    }
-*/
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

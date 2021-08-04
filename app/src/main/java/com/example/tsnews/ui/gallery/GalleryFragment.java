@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -71,6 +72,27 @@ public class GalleryFragment extends Fragment {
         recview1.setLayoutManager(new LinearLayoutManager(root.getContext()));
         adapterbookmark = new myadapterbookmark(options);
         recview1.setAdapter(adapterbookmark);
+       //Swipe to refresh start
+        binding.swipeRefreshLayoutBookmark.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (!isNetworkAvailable()) {
+
+                    FancyToast.makeText(getContext(), "No Internet Connection", FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
+
+                } else if (isNetworkAvailable()) {
+
+                    //Toast.makeText(MainActivity.this,"Welcome", Toast.LENGTH_LONG).show();
+                }
+                //internet check end
+
+                // This method performs the actual data-refresh operation.
+                // The method calls setRefreshing(false) when it's finished.
+                // myUpdateOperation();
+                binding.swipeRefreshLayoutBookmark.setRefreshing(false);
+            }
+        });
+        //swipe to refresh end
 
         return root;
     }
