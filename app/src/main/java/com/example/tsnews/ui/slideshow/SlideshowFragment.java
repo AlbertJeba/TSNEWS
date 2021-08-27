@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.tsnews.R;
 import com.example.tsnews.databinding.FragmentSlideshowBinding;
+import com.example.tsnews.link_feed;
 import com.example.tsnews.model;
+import com.example.tsnews.news_desc;
 import com.example.tsnews.no_internet;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -47,7 +50,7 @@ public class SlideshowFragment extends Fragment {
     Button send;
     TextInputEditText name, email, message;
     String current_user;
-    GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+    GoogleSignInAccount account;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -55,6 +58,7 @@ public class SlideshowFragment extends Fragment {
                 new ViewModelProvider(this).get(SlideshowViewModel.class);
 
         binding = FragmentSlideshowBinding.inflate(inflater, container, false);
+        account = GoogleSignIn.getLastSignedInAccount(getContext());
         View root = binding.getRoot();
         Button button = root.findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {
@@ -117,8 +121,9 @@ public class SlideshowFragment extends Fragment {
 
                         message.setText("");
 
+                      showToast();
 
-                        Toast.makeText(getContext(), "Message send", Toast.LENGTH_LONG).show();
+                        //.makeText(getContext(), "Message send", Toast.LENGTH_LONG).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -129,8 +134,18 @@ public class SlideshowFragment extends Fragment {
                 });
     }
 
+    private void showToast() {
+        LayoutInflater inflater=getLayoutInflater();
+        View layout=inflater.inflate(R.layout.thank_you_toast,getView().findViewById(R.id.card_toast) );
+        Toast toast =new Toast(getContext());
+        toast.setGravity(Gravity.CENTER,0,0);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setView(layout);
+        toast.show();
+    }
+
     public void updateDetail() {
-        Intent intent = new Intent(getContext(), no_internet.class);
+        Intent intent = new Intent(getContext(), link_feed.class);
         startActivity(intent);
     }
 

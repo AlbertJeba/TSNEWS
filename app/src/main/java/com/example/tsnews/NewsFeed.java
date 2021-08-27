@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.view.Window;
@@ -69,17 +70,15 @@ public class NewsFeed extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
-
         binding = ActivityNewsFeedBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         //custom notification shade color  start
         if (Build.VERSION.SDK_INT >= 21) {
             window = this.getWindow();
-            window.setStatusBarColor(this.getResources().getColor(R.color.gray_back));
+            window.setStatusBarColor(this.getResources().getColor(R.color.black));
         }
         //end
         setSupportActionBar(binding.appBarNewsFeed.toolbar);
-
 
 
         //Stat-off Profile details from Google Sign-in
@@ -102,6 +101,21 @@ public class NewsFeed extends AppCompatActivity {
             finish();
             return true;
         });
+
+        // ATTENTION: This was auto-generated to handle app links.
+        Intent appLinkIntent = getIntent();
+        String appLinkAction = appLinkIntent.getAction();
+        Uri appLinkData = appLinkIntent.getData();
+        if (appLinkData != null) {
+            String dataId = String.valueOf(appLinkData);
+
+            Intent resultIntent = new Intent(this, news_desc.class);
+            resultIntent.putExtra("linkvalue", dataId);
+            startActivity(resultIntent);
+
+        }
+        // TextView t=findViewById(R.id.version_number);
+        //t.setText(BuildConfig.VERSION_NAME);
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

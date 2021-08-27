@@ -43,6 +43,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import static android.text.format.DateUtils.*;
@@ -50,7 +51,7 @@ import static android.text.format.DateUtils.*;
 public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewholder> {
 
     ImageButton fav_btn;
-    DatabaseReference databaseReference, fav_item_ref, fav_ref;
+    DatabaseReference databaseReference, fav_item_ref, fav_ref, news;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     Boolean favchecker = false;
 
@@ -76,6 +77,7 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
             public void onClick(View view) {
                 Intent intent = new Intent(holder.img1.getContext(), news_desc.class);
                 intent.putExtra("linkvalue", model.getLink());
+                intent.putExtra("thumbnail", model.getImage());
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 holder.img1.getContext().startActivity(intent);
             }
@@ -83,11 +85,12 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
 
         fav_ref = database.getReference("favourites");
         fav_item_ref = database.getReference("favouriteList").child(currentuserid);
+        news = database.getReference("news");
         String header = getItem(position).getHeader();
         String img = getItem(position).getImage();
         String url = getItem(position).getLink();
         String tim = getItem(position).getTime();
-        ImageView gg= holder.img1;
+        ImageView gg = holder.img1;
 
         holder.share.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,7 +108,7 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
                     intent.putExtra(Intent.EXTRA_STREAM, bmpUri);
 
                 }
-                intent.putExtra(Intent.EXTRA_TEXT, header+ "\n\nRead more -"+url);
+                intent.putExtra(Intent.EXTRA_TEXT, header + "\n\nRead more -" + url);
                 intent = Intent.createChooser(intent, "Share News");
                 v.getContext().startActivity(intent);
             }
@@ -136,6 +139,7 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
                                 favchecker = false;
                             }
                         }
+
                     }
 
                     @Override
@@ -143,15 +147,17 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
 
                     }
                 });
+
             }
         });
 
     }
+
     public Uri getLocalBitmapUri(ImageView imageView) {
         // Extract Bitmap from ImageView drawable
         Drawable drawable = imageView.getDrawable();
         Bitmap bmp = null;
-        if (drawable instanceof BitmapDrawable){
+        if (drawable instanceof BitmapDrawable) {
             bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
         } else {
             return null;
@@ -159,7 +165,7 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
         // Store image to default external storage directory
         Uri bmpUri = null;
         try {
-            File file =  new File(Environment.getExternalStoragePublicDirectory(
+            File file = new File(Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS), "share_image_" + System.currentTimeMillis() + ".png");
             file.getParentFile().mkdirs();
             FileOutputStream out = new FileOutputStream(file);
@@ -171,15 +177,18 @@ public class myadapter extends FirebaseRecyclerAdapter<model, myadapter.myviewho
         }
         return bmpUri;
     }
+
     private String calculateTimeAgo(String time) {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Calcutta"));
         try {
-            long time1 = sdf.parse(time).getTime();
+
+            long time1=0;
+            time1 = Objects.requireNonNull(sdf.parse(time)).getTime();
             long now = System.currentTimeMillis();
             CharSequence ago =
                     getRelativeTimeSpanString(time1, now, MINUTE_IN_MILLIS);
-            return ago + "";
+            return ago+"";
         } catch (ParseException e) {
             e.printStackTrace();
         }

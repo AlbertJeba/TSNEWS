@@ -2,10 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
-    <group android:checkableBehavior="single">
-    <item
-        android:id="@+id/Logout"
 
-        android:title="Logout" />
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/Logout_bottom"
+            android:icon="@color/fui_transparent"
+            android:title="Logout" />
     </group>
 </menu>

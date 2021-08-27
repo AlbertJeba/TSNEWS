@@ -4,15 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:id="@+id/linear_no_internet"
-    tools:context=".no_internet">
+    tools:context=".link_feed">
 
-    <pl.droidsonroids.gif.GifImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center"
-        android:scaleType="fitXY"
-        android:src="@drawable/output_onlinegiftools" />
+    <WebView
+        android:id="@+id/web_view_link"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

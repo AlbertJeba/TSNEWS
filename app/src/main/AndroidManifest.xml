@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
@@ -18,10 +17,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TSNEWS">
+        <activity
+            android:name=".link_feed"
+            android:exported="true" />
         <activity android:name=".no_internet" />
-        <activity android:name=".SignInActivity">
-
-        </activity>
+        <activity android:name=".SignInActivity"></activity>
         <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,10 +33,6 @@
             android:name=".NewsFeed"
             android:label="@string/title_activity_news_feed"
             android:theme="@style/Theme.TSNEWS.NoActionBar">
-
-        </activity>
-        <activity android:name=".news_desc">
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -44,11 +40,23 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="albertjeba.github.io"
+                    android:host="beebom.com"
                     android:scheme="https" />
             </intent-filter>
-        </activity>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="https"
+                    android:host="albertjeba.github.io" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".news_desc"
+            android:parentActivityName=".news_desc"></activity>
     </application>
 
 </manifest>

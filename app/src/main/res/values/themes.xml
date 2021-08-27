@@ -15,6 +15,7 @@
         <!-- Customize your theme here. -->
         <item name="fontFamily">@font/proxima_nova_bold</item>
 
+
     </style>
 
     <style name="Theme.TSNEWS.NoActionBar">

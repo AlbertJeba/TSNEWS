@@ -1,5 +1,8 @@
 package com.example.tsnews.ui.gallery;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
@@ -13,6 +16,7 @@ import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -30,20 +34,24 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.shashank.sony.fancytoastlib.FancyToast;
 
 import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
+import pl.droidsonroids.gif.GifImageView;
+
 public class GalleryFragment extends Fragment {
 
     private GalleryViewModel galleryViewModel;
     private FragmentGalleryBinding binding;
     RecyclerView recview1;
-    DatabaseReference databaseReference,fav_item_ref,fav_ref;
-    com.example.tsnews.myadapterbookmark adapterbookmark;
-
+    DatabaseReference databaseReference, fav_item_ref, fav_ref;
+    myadapterbookmark adapterbookmark;
+    private View mEmptyView;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -60,22 +68,27 @@ public class GalleryFragment extends Fragment {
                 textView.setText(s);
             }
         });*/
-        FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
-        String cuid= user.getUid();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String cuid = user.getUid();
         FirebaseRecyclerOptions<model> options =
                 new FirebaseRecyclerOptions.Builder<model>()
                         .setQuery(FirebaseDatabase.getInstance().getReference("favourites").child(cuid).orderByChild("tsid").limitToLast(100000), model.class)
                         .build();
+
+
         // Add the following lines to create RecyclerView
         recview1 = root.findViewById(R.id.recview_bookmark);
         recview1.setHasFixedSize(true);
         recview1.setLayoutManager(new LinearLayoutManager(root.getContext()));
         adapterbookmark = new myadapterbookmark(options);
         recview1.setAdapter(adapterbookmark);
-       //Swipe to refresh start
+        //Swipe to refresh start
         binding.swipeRefreshLayoutBookmark.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+
+
+
                 if (!isNetworkAvailable()) {
 
                     FancyToast.makeText(getContext(), "No Internet Connection", FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
@@ -92,10 +105,12 @@ public class GalleryFragment extends Fragment {
                 binding.swipeRefreshLayoutBookmark.setRefreshing(false);
             }
         });
-        //swipe to refresh end
 
         return root;
     }
+
+
+    //
     public boolean isNetworkAvailable() {
 
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -120,13 +135,17 @@ public class GalleryFragment extends Fragment {
             }
         }
 
+
         return false;
 
     }
+
+
     @Override
     public void onStart() {
         super.onStart();
         adapterbookmark.startListening();
+
     }
 
     @Override
@@ -135,9 +154,11 @@ public class GalleryFragment extends Fragment {
         adapterbookmark.stopListening();
     }
 
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
+
 }
