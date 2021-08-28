@@ -6,12 +6,14 @@ import static android.view.View.VISIBLE;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
@@ -29,14 +31,17 @@ import com.example.tsnews.databinding.FragmentGalleryBinding;
 import com.example.tsnews.model;
 import com.example.tsnews.myadapter;
 import com.example.tsnews.myadapterbookmark;
+import com.example.tsnews.news_desc;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.shashank.sony.fancytoastlib.FancyToast;
 
 import static com.firebase.ui.auth.AuthUI.getApplicationContext;
@@ -82,11 +87,11 @@ public class GalleryFragment extends Fragment {
         recview1.setLayoutManager(new LinearLayoutManager(root.getContext()));
         adapterbookmark = new myadapterbookmark(options);
         recview1.setAdapter(adapterbookmark);
+
         //Swipe to refresh start
         binding.swipeRefreshLayoutBookmark.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-
 
 
                 if (!isNetworkAvailable()) {
@@ -103,6 +108,24 @@ public class GalleryFragment extends Fragment {
                 // The method calls setRefreshing(false) when it's finished.
                 // myUpdateOperation();
                 binding.swipeRefreshLayoutBookmark.setRefreshing(false);
+            }
+        });
+
+        DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+        mDatabaseRef.child("favourites").child(cuid).orderByChild("tsid").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Toast.makeText(getContext(), "data exists", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    Toast.makeText(getContext(), "No data exists", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
 
@@ -145,7 +168,7 @@ public class GalleryFragment extends Fragment {
     public void onStart() {
         super.onStart();
         adapterbookmark.startListening();
-
+        System.out.println(adapterbookmark.getItemCount());
     }
 
     @Override

@@ -20,8 +20,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.shashank.sony.fancytoastlib.FancyToast;
 
 import java.text.ParseException;
@@ -38,11 +41,14 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class myadapterbookmark extends FirebaseRecyclerAdapter<model, myadapterbookmark.myviewholder> {
     DatabaseReference databaseReference, fav_item_ref;
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    String cuid = user.getUid();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     Boolean favchecker = false;
     private View mEmptyView;
 
     myadapterbookmark adapterbookmark;
+
 
     public myadapterbookmark(@NonNull FirebaseRecyclerOptions<model> options) {
         super(options);
@@ -73,13 +79,6 @@ public class myadapterbookmark extends FirebaseRecyclerAdapter<model, myadapterb
         String url = getItem(position).getLink();
         String tim = getItem(position).getTime();
 
-
-//        TextView t = binding.emptyText;
-        //      GifImageView i = binding.emptyImage;
-
-
-
-
     }
 
 
@@ -98,6 +97,7 @@ public class myadapterbookmark extends FirebaseRecyclerAdapter<model, myadapterb
             e.printStackTrace();
         }
         return "";
+
     }
 
     @NonNull
