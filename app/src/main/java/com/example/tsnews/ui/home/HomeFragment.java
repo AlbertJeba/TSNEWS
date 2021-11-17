@@ -77,8 +77,37 @@ public class HomeFragment extends Fragment {
         recview.setLayoutManager(new LinearLayoutManager(root.getContext()));
         adapter = new myadapter(options);
         recview.setAdapter(adapter);
+
         //end of getting recycler view and adapter
         //swipeRefreshLayout
+
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (!isNetworkAvailable()) {
+
+                    FancyToast.makeText(getContext(), "No Internet Connection", FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
+
+                } else if (isNetworkAvailable()) {
+
+                    //Toast.makeText(MainActivity.this,"Welcome", Toast.LENGTH_LONG).show();
+                }
+                //internet check end
+
+                // This method performs the actual data-refresh operation.
+                // The method calls setRefreshing(false) when it's finished.
+                // myUpdateOperation();
+                adapter.notifyDataSetChanged();
+                binding.swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+        ;
+        //end of swipeRefreshLayout
+        return root;
+
+    }
+
+    private void refresh() {
         binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -98,9 +127,6 @@ public class HomeFragment extends Fragment {
                 binding.swipeRefreshLayout.setRefreshing(false);
             }
         });
-        //end of swipeRefreshLayout
-        return root;
-
     }
 
     //check network connection
@@ -133,12 +159,14 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
         adapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
+
         adapter.stopListening();
     }
 

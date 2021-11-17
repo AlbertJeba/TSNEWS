@@ -1,26 +1,25 @@
 package com.example.tsnews.ui.gallery;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
-import android.os.AsyncTask;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+
+import android.widget.LinearLayout;
 import android.widget.Toast;
-import android.widget.Toolbar;
+
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.LinearLayoutCompat;
+
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
+
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,12 +28,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.tsnews.R;
 import com.example.tsnews.databinding.FragmentGalleryBinding;
 import com.example.tsnews.model;
-import com.example.tsnews.myadapter;
+
 import com.example.tsnews.myadapterbookmark;
-import com.example.tsnews.news_desc;
+
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -44,9 +42,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.shashank.sony.fancytoastlib.FancyToast;
 
-import static com.firebase.ui.auth.AuthUI.getApplicationContext;
-
-import pl.droidsonroids.gif.GifImageView;
 
 public class GalleryFragment extends Fragment {
 
@@ -66,7 +61,7 @@ public class GalleryFragment extends Fragment {
         binding = FragmentGalleryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        /*final TextView textView = binding.textGallery;
+        /* final TextView textView = binding.textGallery;
         galleryViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
@@ -87,39 +82,41 @@ public class GalleryFragment extends Fragment {
         recview1.setLayoutManager(new LinearLayoutManager(root.getContext()));
         adapterbookmark = new myadapterbookmark(options);
         recview1.setAdapter(adapterbookmark);
-
+        DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+        CardView bk = binding.cardBk;
+        adapterbookmark.notifyDataSetChanged();
         //Swipe to refresh start
-        binding.swipeRefreshLayoutBookmark.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
+        binding.swipeRefreshLayoutBookmark.setOnRefreshListener(() -> {
 
 
-                if (!isNetworkAvailable()) {
+            if (!isNetworkAvailable()) {
 
-                    FancyToast.makeText(getContext(), "No Internet Connection", FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
+                FancyToast.makeText(getContext(), "No Internet Connection", FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
 
-                } else if (isNetworkAvailable()) {
+            } else if (isNetworkAvailable()) {
 
-                    //Toast.makeText(MainActivity.this,"Welcome", Toast.LENGTH_LONG).show();
-                }
-                //internet check end
+                //Toast.makeText(MainActivity.this,"Welcome", Toast.LENGTH_LONG).show();
 
-                // This method performs the actual data-refresh operation.
-                // The method calls setRefreshing(false) when it's finished.
-                // myUpdateOperation();
-                binding.swipeRefreshLayoutBookmark.setRefreshing(false);
             }
+            //internet check end
+            adapterbookmark.notifyDataSetChanged();
+            // This method performs the actual data-refresh operation.
+            // The method calls setRefreshing(false) when it's finished.
+            // myUpdateOperation();
+            binding.swipeRefreshLayoutBookmark.setRefreshing(false);
         });
 
-        DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+
         mDatabaseRef.child("favourites").child(cuid).orderByChild("tsid").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    Toast.makeText(getContext(), "data exists", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(), "data exists", Toast.LENGTH_SHORT).show();
+                    bk.setVisibility(View.GONE);
 
                 } else {
                     Toast.makeText(getContext(), "No data exists", Toast.LENGTH_SHORT).show();
+                    bk.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -163,7 +160,6 @@ public class GalleryFragment extends Fragment {
 
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -183,5 +179,6 @@ public class GalleryFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+
 
 }

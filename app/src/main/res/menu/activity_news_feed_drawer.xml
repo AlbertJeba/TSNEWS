@@ -7,20 +7,23 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/newspaper_icon"
-            android:title="News Feed" />
+            android:title="@string/news_feed" />
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_baseline_bookmarks_24"
-            android:title="Bookmarks" />
+            android:title="@string/bookmarks" />
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/contact_us_icon"
-            android:title="Contact Us" />
+            android:title="@string/contact_us" />
+
         <item
             android:id="@+id/Logout"
 
-            android:title="Logout" />
+            android:title="@string/logout" />
+
     </group>
+
 
 
 </menu>

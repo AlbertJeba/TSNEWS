@@ -1,5 +1,6 @@
 package com.example.tsnews;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -25,6 +26,9 @@ public class SplashScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.hide();
         //  FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         if (db == null) {
             db = FirebaseDatabase.getInstance();
@@ -53,7 +57,7 @@ public class SplashScreen extends AppCompatActivity {
                     finish();
                 }
             }
-        }, 1000);
+        }, 2000);
     }
 
 

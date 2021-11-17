@@ -83,9 +83,29 @@ public class NewsFeed extends AppCompatActivity {
 
         //Stat-off Profile details from Google Sign-in
         NavigationView navigationView = binding.navView;
+       // NavigationView navigationViewBottom = binding.navViewBottom;
         profile_photo = navigationView.getHeaderView(0).findViewById(R.id.user_profile_photo);
         u_name = navigationView.getHeaderView(0).findViewById(R.id.user_name);
         u_email = navigationView.getHeaderView(0).findViewById(R.id.user_email_id);
+        TextView LogoutBottomTxt=binding.LogoutBottomTxt;
+        LogoutBottomTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(getApplicationContext(), SignInActivity.class));
+                // [START auth_fui_signout]
+                AuthUI.getInstance()
+                        .signOut(getApplicationContext())
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            public void onComplete(@NonNull Task<Void> task) {
+
+                            }
+                        });
+                finish();
+            }
+        });
+        TextView verison_no=binding.versionTxt;
+        verison_no.setText("Version : "+BuildConfig.VERSION_NAME);
         //logout button
         navigationView.getMenu().findItem(R.id.Logout).setOnMenuItemClickListener(menuItem -> {
             FirebaseAuth.getInstance().signOut();
@@ -119,6 +139,7 @@ public class NewsFeed extends AppCompatActivity {
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        assert account != null;
         u_name.setText(account.getDisplayName());
         u_email.setText(account.getEmail());
         Glide.with(this).load(account.getPhotoUrl()).into(profile_photo);
@@ -127,10 +148,10 @@ public class NewsFeed extends AppCompatActivity {
         if (!isNetworkAvailable()) {
             FancyToast.makeText(this, "No Internet Connection", FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
 
-        } else if (isNetworkAvailable()) {
+        } //else if (isNetworkAvailable()) {
 
             //Toast.makeText(MainActivity.this,"Welcome", Toast.LENGTH_LONG).show();
-        }
+     //   }
         //internet check end
 
         DrawerLayout drawer = binding.drawerLayout;

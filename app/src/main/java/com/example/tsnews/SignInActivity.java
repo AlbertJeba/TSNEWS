@@ -1,6 +1,7 @@
 package com.example.tsnews;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -59,7 +60,8 @@ public class SignInActivity extends AppCompatActivity {
         btn = findViewById(R.id.SignInButtonGoogle);
         mAuth = FirebaseAuth.getInstance();
         processrequest();
-
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
